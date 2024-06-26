@@ -5,15 +5,15 @@ const { JsonWebTokenError } = require("jsonwebtoken")
 
 const createUser = (newUser) => {
     return new Promise( async (resolve, reject) => {
-        const {name, email, password, confirmPassword, phone} = newUser
+        const {name, email, password} = newUser
         try {
             const checkUser = await User.findOne({
                 email: email
             })
            if(checkUser !== null) {
                 resolve({
-                    status: "OK",
-                    message: "The email is already"
+                    status: "ERR",
+                    message: "Email đã tồn tại!"
                 })
            }
            const hash = bcrypt.hashSync(password, 10)
@@ -21,7 +21,6 @@ const createUser = (newUser) => {
                 name,
                 email, 
                 password: hash, 
-                phone
             })
             if(createUser){
                 resolve({
@@ -38,23 +37,23 @@ const createUser = (newUser) => {
 
 const loginUser = (userLogin) => {
     return new Promise( async (resolve, reject) => {
-        const {name, email, password, confirmPassword, phone} = userLogin
+        const {email, password} = userLogin
         try {
             const checkUser = await User.findOne({
                 email: email
             })
            if(checkUser == null) {
                 resolve({
-                    status: "OK",
-                    message: "The user is not defined"
+                    status: "ERR",
+                    message: "Không tìm thấy người dùng!"
                 })
            }
            const comparePassword = bcrypt.compareSync(password,checkUser.password)
            console.log('comparePassword', comparePassword)
             if(!comparePassword){
                 resolve({
-                    status: "OK",
-                    message: "The password or user is incorrect"
+                    status: "ERR",
+                    message: "Email hoặc Mật khẩu sai!"
                 })
             }
             const access_token = await genneralAccessToken({

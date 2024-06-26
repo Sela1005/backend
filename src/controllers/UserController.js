@@ -3,11 +3,11 @@ const JwtService = require('../services/JwtService')
 
 const createUser = async (req, res) => {
     try {
-        const {name, email, password, confirmPassword, phone} = req.body
+        const {email, password, confirmPassword} = req.body
         const reg = /^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/
         const isCheckEmail = reg.test(email)
 
-        if(!name|| !email|| !password|| !confirmPassword|| !phone) {
+        if(!email|| !password|| !confirmPassword) {
             return res.status(200).json({
                 status: "ERR",
                 message: "The input is required"
@@ -15,12 +15,12 @@ const createUser = async (req, res) => {
         }else if(!isCheckEmail) {
             return res.status(200).json({
                 status: "ERR",
-                message: "The input is email"
+                message: "Hãy nhập email hợp lệ"
             })
         }else if(password != confirmPassword) {
             return res.status(200).json({
                 status: "ERR",
-                message: "The password is equal confirmPassword"
+                message: "Hãy nhập mật khẩu và nhập lại mật khẩu trùng khớp"
             })
         }
         const response = await UserService.createUser(req.body)
@@ -35,11 +35,11 @@ const createUser = async (req, res) => {
 
 const loginUser = async (req, res) => {
     try {
-        const {name, email, password, confirmPassword, phone} = req.body
+        const {email, password} = req.body
         const reg = /^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/
         const isCheckEmail = reg.test(email)
 
-        if(!name|| !email|| !password|| !confirmPassword|| !phone) {
+        if(!email|| !password) {
             return res.status(200).json({
                 status: "ERR",
                 message: "The input is required"
@@ -49,14 +49,14 @@ const loginUser = async (req, res) => {
                 status: "ERR",
                 message: "The input is email"
             })
-        }else if(password != confirmPassword) {
-            return res.status(200).json({
-                status: "ERR",
-                message: "The password is equal confirmPassword"
-            })
         }
         const response = await UserService.loginUser(req.body)
-        return res.status(200).json(response)
+        const {refresh_token, ...newRespone} = response
+        res.cookie('refresh_token', refresh_token, {
+            HttpOnly: true,
+            Secure: true,
+        })
+        return res.status(200).json(newRespone)
     } catch(e) {
         return res.status(404).json({
             message: e
@@ -130,9 +130,10 @@ const getDetailsUser = async (req, res) => {
     }
 }
 
-const refresToken = async (req, res) => {
+const refreshToken = async (req, res) => {
+    console.log('req.cookies',req.cookies)
     try {
-        const token = req.headers.token.split(' ')[1]
+        const token = req.cookies.refresh_token
         if(!token){
             return res.status(200).json({
                 status: "ERR",
@@ -141,6 +142,7 @@ const refresToken = async (req, res) => {
         }
         const response = await JwtService.refreshTokenJwtService(token)
         return res.status(200).json(response)
+        return
     } catch(e) {
         return res.status(404).json({
             message: e
@@ -157,5 +159,5 @@ module.exports = {
     deleteUser,
     getAllUser,
     getDetailsUser,
-    refresToken
+    refreshToken
 }
