@@ -20,7 +20,7 @@ const createUser = (newUser) => {
             const createUser =await User.create({ //createdUser
                 name,
                 email, 
-                password: hash, 
+                password: hash
             })
             if(createUser){
                 resolve({

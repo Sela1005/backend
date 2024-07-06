@@ -3,7 +3,7 @@ const JwtService = require('../services/JwtService')
 
 const createUser = async (req, res) => {
     try {
-        const {email, password, confirmPassword} = req.body
+        const {email, password, confirmPassword,phone} = req.body
         const reg = /^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/
         const isCheckEmail = reg.test(email)
 
@@ -53,8 +53,9 @@ const loginUser = async (req, res) => {
         const response = await UserService.loginUser(req.body)
         const {refresh_token, ...newRespone} = response
         res.cookie('refresh_token', refresh_token, {
-            HttpOnly: true,
-            Secure: true,
+            httpOnly: true,
+            secure: false,
+            samesite: 'Strict'
         })
         return res.status(200).json(newRespone)
     } catch(e) {
@@ -131,7 +132,7 @@ const getDetailsUser = async (req, res) => {
 }
 
 const refreshToken = async (req, res) => {
-    console.log('req.cookies',req.cookies)
+    console.log('req.cookies.refresh_token',req.cookies.refresh_token)
     try {
         const token = req.cookies.refresh_token
         if(!token){
@@ -142,7 +143,21 @@ const refreshToken = async (req, res) => {
         }
         const response = await JwtService.refreshTokenJwtService(token)
         return res.status(200).json(response)
-        return
+    } catch(e) {
+        return res.status(404).json({
+            message: e
+        })
+    }
+}
+
+const logoutUser = async (req, res) => {
+    console.log('req.cookies.refresh_token',req.cookies.refresh_token)
+    try {
+       res.clearCookie('refresh_token')
+        return res.status(200).json({
+            status: 'OK',
+            message: 'Logout Successfully'
+        })
     } catch(e) {
         return res.status(404).json({
             message: e
@@ -159,5 +174,6 @@ module.exports = {
     deleteUser,
     getAllUser,
     getDetailsUser,
-    refreshToken
+    refreshToken,
+    logoutUser
 }

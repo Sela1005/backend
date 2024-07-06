@@ -5,7 +5,7 @@ dotenv.config()
 const genneralAccessToken = (payload) => {
     const access_token = jwt.sign({
         ...payload
-    }, process.env.ACCESS_TOKEN, { expiresIn: '30s' })
+    }, process.env.ACCESS_TOKEN, { expiresIn: '60s' })
 
     return access_token;
 }
@@ -19,34 +19,26 @@ const genneralRefreshToken = (payload) => {
 }
 
 const refreshTokenJwtService = (token) => {
-    return new Promise( async (resolve, reject) => {
-        try {
-           jwt.verify(token, process.env.REFRESH_TOKEN, async (err, user)=> { 
-            if(err){
-                console.log('err', err)
-                resolve({
-                    status: "ERR",
-                    message: "The authentication"
-                })
-           }
-            const {payload} = user
-            const access_token = await genneralAccessToken({
-            id: payload?.id,
-            isAdmin: payload?.isAdmin
-        })
-        console.log('access_token',access_token)
-        resolve({
-            status: "OK",
-            message: "SUCCESS",
-            access_token
-            })
-        })
-        } catch (e) {
-            reject(e)
-        }
-    })
-}
-
+    return new Promise((resolve, reject) => {
+        jwt.verify(token, process.env.REFRESH_TOKEN, (err, user) => {
+            if (err) {
+                console.error('Error verifying refresh token:', err);
+                return reject(err); // Trả về lỗi cụ thể nếu có lỗi trong quá trình xác thực token
+            }
+            
+            const access_token = genneralAccessToken({
+                id: user?.id,
+                isAdmin: user?.isAdmin
+            });
+            
+            resolve({
+                status: "OK",
+                message: "SUCCESS",
+                access_token
+            });
+        });
+    });
+};
 
 
 module.exports = {
