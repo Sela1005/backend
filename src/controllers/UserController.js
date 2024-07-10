@@ -132,7 +132,6 @@ const getDetailsUser = async (req, res) => {
 }
 
 const refreshToken = async (req, res) => {
-    console.log('req.cookies.refresh_token',req.cookies.refresh_token)
     try {
         const token = req.cookies.refresh_token
         if(!token){
@@ -151,7 +150,6 @@ const refreshToken = async (req, res) => {
 }
 
 const logoutUser = async (req, res) => {
-    console.log('req.cookies.refresh_token',req.cookies.refresh_token)
     try {
        res.clearCookie('refresh_token')
         return res.status(200).json({

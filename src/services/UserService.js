@@ -49,7 +49,6 @@ const loginUser = (userLogin) => {
                 })
            }
            const comparePassword = bcrypt.compareSync(password,checkUser.password)
-           console.log('comparePassword', comparePassword)
             if(!comparePassword){
                 resolve({
                     status: "ERR",
@@ -149,7 +148,6 @@ const getDetailsUser = (id) => {
             const user = await User.findOne({
                 _id: id
             })
-            console.log('user', user)
            if(user == null) {
                 resolve({
                     status: "OK",

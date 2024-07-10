@@ -10,8 +10,8 @@ const createProduct = (newProduct) => {
             })
            if(checkProduct !== null) {
                 resolve({
-                    status: "OK",
-                    message: "The name of product is already"
+                    status: "ERR",
+                    message: "Tên sản phẩm đã tồn tại!"
                 })
            }
             const newProduct =await Product.create({
@@ -94,7 +94,6 @@ const getAllProduct = (limit, page, sort,filter) => {
             const totalProduct = await Product.countDocuments()
             if(filter){
                 const label = filter[0];
-                console.log('first', label)
                 const allObjectFilter= await Product.find({
                     [label]: {'$regex' : filter[1]}
                 }).limit(limit).skip(page * limit)
