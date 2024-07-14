@@ -3,7 +3,7 @@ const Product = require("../models/ProductModel")
 
 const createProduct = (newProduct) => {
     return new Promise( async (resolve, reject) => {
-        const {name, image, type, price, countInStock,rating,description} = newProduct
+        const {name, image, type, price, countInStock,rating,description, discount} = newProduct
         try {
             const checkProduct = await Product.findOne({
                 name: name
@@ -21,7 +21,8 @@ const createProduct = (newProduct) => {
                 price, 
                 countInStock,
                 rating,
-                description
+                description,
+                discount
             })
             if(newProduct){
                 resolve({
@@ -88,6 +89,21 @@ const deleteProduct = (id) => {
     })
 }
 
+const deleteManyProduct = (ids) => {
+    return new Promise( async (resolve, reject) => {
+        try {
+           
+           await Product.deleteMany({_id: ids})
+            resolve({
+                status: "OK",
+                message: "DELETE PRODUCT SUCCESS",
+                })
+        } catch (e) {
+            reject(e)
+        }
+    })
+}
+
 const getAllProduct = (limit, page, sort,filter) => {
     return new Promise( async (resolve, reject) => {
         try {
@@ -134,6 +150,22 @@ const getAllProduct = (limit, page, sort,filter) => {
     })
 }
 
+const getAllType = () => {
+    return new Promise( async (resolve, reject) => {
+        try {
+
+           const allType = await Product.distinct('type')
+            resolve({
+                status: "OK",
+                message: "SUCCESS",
+                data: allType,
+                })
+        } catch (e) {
+            reject(e)
+        }
+    })
+}
+
 const getDetailProduct  = (id) => {
     return new Promise( async (resolve, reject) => {
         try {
@@ -165,6 +197,8 @@ module.exports = {
     updateProduct,
     getDetailProduct,
     deleteProduct,
-    getAllProduct
+    getAllProduct,
+    deleteManyProduct,
+    getAllType
     
 }

@@ -22,7 +22,6 @@ const refreshTokenJwtService = (token) => {
     return new Promise((resolve, reject) => {
         jwt.verify(token, process.env.REFRESH_TOKEN, (err, user) => {
             if (err) {
-                console.error('Error verifying refresh token:', err);
                 return reject(err); // Trả về lỗi cụ thể nếu có lỗi trong quá trình xác thực token
             }
             
