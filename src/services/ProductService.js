@@ -19,10 +19,10 @@ const createProduct = (newProduct) => {
                 image, 
                 type, 
                 price, 
-                countInStock,
+                countInStock: Number(countInStock),
                 rating,
                 description,
-                discount
+                discount: Number(discount)
             })
             if(newProduct){
                 resolve({
@@ -104,6 +104,32 @@ const deleteManyProduct = (ids) => {
     })
 }
 
+const getDetailProduct  = (id) => {
+    return new Promise( async (resolve, reject) => {
+        try {
+            const product = await Product.findOne({
+                _id: id
+
+            })
+           if(product == null) {
+                resolve({
+                    status: "OK",
+                    message: "The product is not defined"
+                })
+           }
+           
+            resolve({
+                status: "OK",
+                message: "SUCCESS",
+                data: product
+                })
+        } catch (e) {
+            reject(e)
+        }
+    })
+}
+
+
 const getAllProduct = (limit, page, sort,filter) => {
     return new Promise( async (resolve, reject) => {
         try {
@@ -166,30 +192,6 @@ const getAllType = () => {
     })
 }
 
-const getDetailProduct  = (id) => {
-    return new Promise( async (resolve, reject) => {
-        try {
-            const product = await Product.findOne({
-                _id: id
-
-            })
-           if(product == null) {
-                resolve({
-                    status: "OK",
-                    message: "The product is not defined"
-                })
-           }
-           
-            resolve({
-                status: "OK",
-                message: "SUCCESS",
-                data: product
-                })
-        } catch (e) {
-            reject(e)
-        }
-    })
-}
 
 
 module.exports = {

@@ -10,6 +10,7 @@ const userSchema = new mongoose.Schema(
         address: {type: String},
         avatar: {type: String},
         city: {type: String},
+        role: {type: String},
     },
     {
         timestamps: true
